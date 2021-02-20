@@ -1,0 +1,449 @@
+; The domain of the function is (-inf, +inf)
+; The codomain of the function is (1, a + 1)
+; x: is a tick scaled in the range [0,1], 1 is equivalent to ticks-spread (ticks-spread represents
+;    how many ticks are needed to reach the maximum value of the sigmoid function)
+; a: is the maximum value that the sigmoid function can reach
+; b: Determinate the inflexion point. With b=1 the inflexion point is in x=0.5
+to-report logistic [x a b]
+  let k 4  ; Growth rate, values can be in [3,10] so that it behaves correctly
+  
+  report 1.0 + ( a / (1.0 + b * (e ^ (- k * (x - 0.5)))) )  ; x-0.5 allow the function start increasing from x = 0 aprox.
+end
+
+; increase: is the times to increase
+to-report calc-logistic-proportion [increase ticks-spread]
+  set i 0
+  let d_x 1.0 / (ticks-spread - 1.0)
+  let v_result [1]
+  let a increase - 1.0
+  let b 1
+  
+  repeat (ticks-spread - 1) [
+    set v_result lput ( logistic ((i + 1) * d_x) a b / logistic (i * d_x) a b ) v_result
+    set i i + 1
+  ]
+  
+  report max v_result - 1.0
+end
+
+to-report gauss-aproximation [x a]
+  let c 0.19
+  let b 0.5
+  
+  let result a * (e ^ ( - ((x - b) ^ 2.0) / (2.0 * (c ^ 2.0) ) ))
+  
+  report result
+end
+
+; Tumor recruitment
+to-report tumor-cells-to-recruit [ticks-spreading current-cells]
+  let d_x 1.0 / (ticks-tumor-spread - 1.0)  ; ticks-tumor-spread - Ticks totales para llegar al maximo valor de la curva sigmoide.  d_x - Diferencial de x
+  let x (ticks-spreading * d_x)             ; ticks-spreading - Ticks de vida del tumor.
+  
+  let result int( current-cells * gauss-aproximation x a-gauss-tumor)  ; Aproximacion de la funcion de gauss usando las variables, x, a
+  
+  if result = 0 and random 100 < 50 [
+    set result 1
+  ]
+  
+  report result
+end
+
+; Immune system recruitment
+to-report is-cells-to-recruit [ticks-spreading current-cells]
+  ;report int(gauss recruit-neutrophils x)
+  let d_x 1.0 / (ticks-is-spread - 1.0)  ; ticks-tumor-spread - Ticks totales para llegar al maximo valor de la curva sigmoide.  d_x - Diferencial de x
+  let x (ticks-spreading * d_x)          ; ticks-spreading - Ticks de vida del sistema inmune.
+  
+  let result int( current-cells * gauss-aproximation x a-gauss-is)  ; Aproximacion de la funcion de gauss usando las variables, x, a
+  set result result / 2.6
+  
+  if result = 0 and random 100 < 33 [
+    set result 1
+  ]
+  
+  report result
+end
+
+; ################## Read input files ##################
+
+; Read initial values of force from input file
+to set-initial-values-from-file[filename]
+  ;open file wich contains input values
+  file-open filename
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-tumor-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-neutrophils-cell item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-macrophages-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-natural-killers-cells item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set tumor-growth-factor item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set recruit-natural-killers item 1 data
+  
+  set data csv:from-row file-read-line
+  set SAttackSuccesByNk item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set recruit-macrophages item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-MacrTum item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOf-tam1 item 1 data
+  set SuccesOf-tam2 100 - SuccesOf-tam1
+  
+  set data csv:from-row file-read-line
+  set Change-to-tam1-or-tam2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set No-of-activating-tumor-cells-by-tam2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set No-of-desactivating-tumor-cells-by-tam1 item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set recruit-neutrophils item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-NeutTum item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOf-tan1 item 1 data
+  set SuccesOf-tan2 100 - SuccesOf-tan1
+  
+  set data csv:from-row file-read-line
+  set Change-to-tan1-or-tan2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set No-of-activating-tumor-cells-by-tan2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set No-of-desactivating-tumor-cells-by-tan1 item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set max-age-tam1 item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-tam2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-tan1 item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-tan2 item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-nk item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set max-tumors item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.ticks item 1 data
+  
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-t-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set recruit-t-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-tCells-tumor item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-t-cell item 1 data
+  
+  set data csv:from-row file-read-line
+  set AttackSuccesByTCells item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-treg-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set recruit-treg-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-tregCells-tCells item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-tregCells-thCells item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-treg-cell item 1 data
+  
+  set data csv:from-row file-read-line
+  set No.-of-initial-th-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set recruit-th-cells item 1 data
+  
+  set data csv:from-row file-read-line
+  set SuccesOfInterac-thCells-tCells item 1 data
+  
+  set data csv:from-row file-read-line
+  set max-age-th-cell item 1 data
+end
+
+; ################## Write output files ##################
+
+to print_file [string number]
+  file-open (word string number ".csv")
+  file-type " "
+  file-type ","
+  file-type "Num of tumor cells"
+  file-type ","
+  file-type "Num of neutrophils"
+  file-type ","
+  file-type "Num of macrophages cells "
+  file-type ","
+  file-type "Num of natural killers cells "
+  file-type ","
+  file-type "Num of th cells "
+  file-type ","
+  file-type "Num of treg cells "
+  file-type"\r\n"
+
+end
+
+to print_file_hamilton
+  file-open (word "log/primary_tumor/Hamilton" file_number ".csv")
+  file-type " "
+  file-type ","
+  file-type "HamiltonTu"
+  file-type ","
+  file-type "HamiltonIS"
+  file-type ","
+  file-type "hamilton"
+  file-type"\r\n"
+end
+
+to print_data_primary [cont number ]
+  file-open (word "log/primary_tumor/primary tumor" number ".csv")
+  file-type "time"
+  file-type cont
+  file-type ","
+  file-type count tumors
+  file-type ","
+  file-type count neutrs
+  file-type ","
+  file-type count macros
+  file-type ","
+  file-type count natuks
+  file-type ","
+  file-type count t-cells
+  file-type ","
+  file-type count th-cells
+  file-type ","
+  file-type count treg-cells
+  file-type "\r\n"
+end
+
+to print_data_hamilton [cont]
+  file-open (word "log/primary_tumor/Hamilton" file_number ".csv")
+  file-type "time"
+  file-type cont
+  file-type ","
+  file-type HamiltonTu
+  file-type ","
+  file-type  HamiltonIS
+  file-type ","
+  file-type  hamilton
+  file-type"\r\n"
+end
+
+;___________________________________ output files
+;export all deafault netlogo output files
+to output_files
+  export-view (word "log/primary_tumor/modelo_cancer" file_number ".png")
+  export-output (word "log/primary_tumor/salida_modelo_cancer" file_number ".csv")
+  export-world (word "log/primary_tumor/modelo_hamilton" file_number ".csv")
+  export-all-plots (word "log/primary_tumor/primary tumor graphs " file_number ".csv")
+  export-plot "Primary tumor cells" (word "log/primary_tumor/primary_tumor_graphs" file_number ".csv")
+  export-plot "Bone tumor cells" (word "log/bone/primary_tumor_graphs" file_number ".csv")
+  export-plot "Lung tumor cells" (word "log/lung/primary_tumor_graphs" file_number ".csv")
+  export-plot "Liver tumor cells" (word "log/liver/primary_tumor_graphs" file_number ".csv")
+end
+
+;Isig hamilton
+to hamilton-1
+  set hamilton 0
+  set HamiltonIS 0
+  set HamiltonTu 0
+  let x vector-x
+  let W matrix-W
+  let sum1 0
+  let wij 0
+  let xj 0
+  let xi 0
+  let sum2 0
+
+  set i  0
+  repeat l
+  [
+    set j 0
+    set xi item i x
+
+    repeat l
+    [
+      set xj item j x
+      set wij matrix:get W i j
+
+      ifelse abs(xi) > abs(xj) [
+        set sum1 wij * xi * abs(xj)
+      ] [
+        set sum1 wij * abs(xi) * xj
+      ]
+      ;show(word "wij xj xi=" sum1)
+
+
+      ifelse sum1 >= 0 [
+        set HamiltonIS HamiltonIS - 0.5 * sum1
+      ] [
+        set HamiltonTu HamiltonTu - 0.5 * sum1
+      ]
+
+      set j j + 1
+    ]
+
+    set sum2 item i x
+    ifelse sum2 >= 0 [
+      set HamiltonIS HamiltonIS - sum2
+    ] [
+      set HamiltonTu HamiltonTu - sum2
+    ]
+
+    set i i + 1
+  ]
+
+
+  ;show (word "hamilton=" hamilton)
+  set hamilton HamiltonTu + HamiltonIS
+  ;show (word "hamilton" hamilton)
+  print_data_hamilton counter
+end
+
+to-report vector-x
+  let x-vector []
+
+  let x1 -1 * count tumors
+  set x-vector lput x1 x-vector
+  let x2 1 * count neutrs - tan1 - tan2
+  set x-vector lput x2 x-vector
+  let x3 1 * tan1
+  set x-vector lput x3 x-vector
+  let x4 -1 * tan2
+  set x-vector lput x4 x-vector
+  let x5 1 * count macros - tam1 - tam2
+  set x-vector lput x5 x-vector
+  let x6 1 * tam1
+  set x-vector lput x6 x-vector
+  let x7 -1 * tam2
+  set x-vector lput x7 x-vector
+  let x8 1 * count natuks
+  set x-vector lput x8 x-vector
+
+  report x-vector
+end
+
+;-------------------------------------------------Matrix W
+to-report matrix-W
+  ; Read matrix Q from file
+  let Q-list csv:from-file "matriz_q.csv"
+  set Q matrix:from-row-list Q-list
+
+  set i 1
+  set l 8
+
+  set P probabilities-p
+  ;create an empty list
+  let Waux []
+  set i 0
+  repeat l
+  [
+    ; aqui se forman los renglones de la matriz W
+    let Aj []
+    set j 0
+    repeat l
+    [
+      ;get aij element of matrix W
+      set aij elemento-aij i j
+      ; add aij to Aj
+      set Aj lput aij Aj
+      set j j + 1
+    ]
+    ;create row list of matrix W
+    set Waux lput Aj Waux
+    set i i + 1
+  ]
+  ;create the matrix W
+  let MatrixW matrix:from-row-list Waux
+  ;show (word "HamiltonTu= ")
+  ; print matrix:pretty-print-text MatrixW
+
+  report MatrixW
+end
+
+
+; calculate the  ij element of  W matrix
+to-report elemento-aij[ i1 j1]
+  let aux1 matrix:get Q i1 j1
+  let aux2 matrix:get P i1 j1
+
+  report aux1 * aux2
+end
+
+
+; probabilities matrix
+to-report probabilities-p
+  let p12 SuccesOfInterac-NeutTum * 0.01  ; Probabilidad de intereaccion entre neutrofilos y el tumor.
+
+  let p23 Change-to-tan1-or-tan2 * 0.01   ; Probabilidad de que cambie un neutrofilo a tan1.
+  let p24 1 - p23                         ; Probabilidad de que cambie un neutrofilo a tan2.
+
+  let p13 p23 * SuccesOf-tan1 * 0.01      ; Probabilidad de exito de ataque de tan1.
+  let p14 1 - p13                         ; Probabilidad de exito de ataque de tan2.
+
+  let p15 SuccesOfInterac-MacrTum * 0.01  ; Probabilidad de intereaccion entre macrofagos y el tumor.
+
+  let p56 Change-to-tam1-or-tam2 * 0.01   ; Probabilidad de que cambie un macrofago a tam1.
+  let p57 1 - p56                         ; Probabilidad de que cambie un macrofago a tam2.
+
+  let p16 p56 * SuccesOf-tam1 * 0.01      ; Probabilidad de exito de ataque de tam1.
+  let p17 1 - p16                         ; Probabilidad de exito de ataque de tam2.
+
+  let p18 SAttackSuccesByNk * 0.01        ; Probabilidad de exito de ataque de los natural killers.
+
+  let p-list (list
+    (list 0.0 p12 p13 p14 p15 p16 p17 p18)
+    (list p12 0.0 p23 p24 0.0 0.0 0.0 0.0)
+    (list p13 p23 0.0 0.5 0.0 0.0 0.0 0.0)
+    (list p14 p24 0.5 0.0 0.0 0.0 0.0 0.0)
+    (list p15 0.0 0.0 0.0 0.0 p56 p57 0.0)
+    (list p16 0.0 0.0 0.0 p56 0.0 0.5 0.0)
+    (list p17 0.0 0.0 0.0 p57 0.5 0.0 0.0)
+    (list p18 0.0 0.0 0.0 0.0 0.0 0.0 0.0)
+  )
+
+  let p-matrix matrix:from-column-list p-list
+  ;print matrix:pretty-print-text p-matrix
+
+  report p-matrix
+end

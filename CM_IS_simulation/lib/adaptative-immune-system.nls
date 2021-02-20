@@ -1,0 +1,171 @@
+; ################## Turtles ##################
+
+
+breed [treg-cells treg-cell] ; Tregs cells
+breed [th-cells th-cell] ; Th cells
+breed [t-cells t-cell] ; T cells
+
+
+; ################## Turtles properties ##################
+
+
+t-cells-own [ attack-success ] 
+
+
+; ################## Initial setup ##################
+
+
+;------------------------------------- cells definitions
+; Treg cells
+to setup-tr-cell
+  setup-cell cyan + 1
+end
+
+; Th cells
+to setup-th-cell
+  setup-cell cyan + 2
+end
+
+; T cells
+to setup-t-cell
+  setup-cell cyan - 1
+  set attack-success AttackSuccesByTCells
+end
+
+to setup-treg-cells [a b]
+  create-treg-cells No.-of-initial-treg-cells [
+    let x cordinates a 1
+    let y cordinates b -1
+    setxy x y
+    
+    setup-tr-cell
+  ]
+end
+
+to setup-th-cells [a b]
+  create-th-cells No.-of-initial-th-cells [
+    let x cordinates a 1
+    let y cordinates b -1
+    setxy x y
+    
+    setup-th-cell
+  ]
+end
+
+to setup-t-cells [a b]
+  create-t-cells No.-of-initial-t-cells [
+    let x cordinates a 1
+    let y cordinates b -1
+    setxy x y
+    
+    setup-t-cell
+  ]
+end
+
+
+; ################## Movements ##################
+
+
+;------------------------------------- T cells
+to recruit-t-cell
+  ;let x cordinates -1 1
+  ;let y cordinates 1 -1
+  ;create-natuks is-cells-to-recruit ticks is-cells [ setup-natuk setxy x y ]
+end
+
+to move-t-cell
+  let tumor-near one-of tumors
+  
+  if tumor-near != nobody and random 100 < SuccesOfInterac-tCells-tumor [
+    move-to tumor-near
+    fd 0.5
+  ]
+end
+
+to attack-t-cell
+  let attackSuccess attack-success
+  ask tumors-here [
+    if random 100 < attackSuccess [
+      death-tumor
+    ]
+  ]
+end
+
+to death-t-cell
+  if must-die? max-age-t-cell 4 [ die ]
+  
+  set age age + 1
+end
+
+;------------------------------------- Treg cells
+to recruit-treg-cell
+  ;let x cordinates -1 1
+  ;let y cordinates 1 -1
+  ;create-natuks is-cells-to-recruit ticks is-cells [ setup-natuk setxy x y ]
+end
+
+to move-treg-cell
+  ; La mitad de las celulas tr ayudaran a las celulas t y la otra mitad a las celulas th
+  ifelse random 100 < 50 [
+    let t-cell-near one-of t-cells
+    
+    if t-cell-near != nobody and random 100 < SuccesOfInterac-tregCells-tCells [
+      move-to t-cell-near
+      fd 0.5
+    ]
+  ] [
+    let th-cell-near one-of th-cells
+    if th-cell-near != nobody and random 100 < SuccesOfInterac-tregCells-thCells [
+      move-to th-cell-near
+      fd 0.5
+    ]
+  ]
+end
+
+to attack-treg-cell
+  ask t-cells-here [
+    ; Reducir la edad de las celulas t en 0.05 años.
+    set age age - 0.05
+  ]
+  
+  ask th-cells-here [
+    ; Reducir la edad de las celulas t en 0.05 años.
+    set age age - 0.05
+  ]
+end
+
+to death-treg-cell
+  if must-die? max-age-treg-cell 4 [ die ]
+  
+  set age age + 1
+end
+
+;------------------------------------- Th cells
+to recruit-th-cell
+  ;let x cordinates -1 1
+  ;let y cordinates 1 -1
+  ;create-natuks is-cells-to-recruit ticks is-cells [ setup-natuk setxy x y ]
+end
+
+to move-th-cell
+  let t-cell-here one-of t-cells
+  
+  ; Mover las celulas th hacia las celulas t de acuerdo a su probabilidad de interaccion.
+  if t-cell-here != nobody and random 100 < SuccesOfInterac-thCells-tCells [
+    move-to t-cell-here
+    fd 0.5
+  ]
+end
+
+to attack-th-cell
+  ask t-cells-here [
+    ; Aumentar el nivel de ataque (probabilidad de ataque exitoso) de las celulas t, en 0.05.
+    set attack-success attack-success + 0.05 
+  ]
+end
+
+to death-th-cell
+  if must-die? max-age-th-cell 4 [ die ]
+  
+  set age age + 1
+end

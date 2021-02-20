@@ -1,0 +1,144 @@
+; ################## Turtles ##################
+
+; Primary tumor
+breed [ tumors tumor ] ; tumor cells
+breed [ neutrs neutr ] ; neutrophils cells
+breed [ macros macro ] ; macrophages cells
+breed [ natuks natuk ] ; natural killers, NK naturally regulate adaptative immune system cell proliferation
+
+; Bone tumor
+breed [ tumorsB tumorB ] ; tumor cells corresponding to bone
+breed [ neutrsB neutrB ] ; neutrophils cells corresponding to bone
+breed [ macrosB macroB ] ; macrophages cells corresponding to bone
+breed [ natuksB natukB ] ; natural killers, NK naturally regulate adaptative immune system cell proliferation corresponding to bone
+
+; Lung tumor
+breed [ tumorsLg tumorLg ] ; tumor cells corresponding to lung
+breed [ neutrsLg neutrLg ] ; neutrophils cells corresponding to lung
+breed [ macrosLg macroLg ] ; macrophages cells corresponding to lung
+breed [ natuksLg natukLg ] ; natural killers, NK naturally regulate adaptative immune system cell proliferation corresponding to lung
+
+; Liver tumor
+breed [ tumorsLv tumorLv ] ; tumor cells corresponding to liver
+breed [ neutrsLv neutrLv ] ; neutrophils cells corresponding to liver
+breed [ macrosLv macroLv ] ; macrophages cells corresponding to liver
+breed [ natuksLv natukLv ] ; natural killers, NK naturally regulate adaptative immune system cell proliferation corresponding to liver
+
+; ################## Turtles properties ##################
+
+turtles-own [ age ] ; cell age
+
+; neut? is a neutrophil
+; tan1? is a tumor associate neutrophil type 1 (pro-inflamatory antitumor)
+; tan2? is a tumor associate neutrophil type 2 (pro-tumor anti-inflamatory)
+neutrs-own [ neut? tan1? tan2? ]
+neutrsB-own [ neut? tan1? tan2? ]
+neutrsLv-own [ neut? tan1? tan2? ]
+neutrsLg-own [ neut? tan1? tan2? ]
+
+; macr? is a macrophage
+; tam1? is a tumor associate macrophage type 1 (pro-inflamatory antitumor, eats
+;     that tumor cells that are innactive)
+; tam2? is a tumor associate macrophage type 2 (pro-tumor anti-inflamatory, and
+;     attack some adaptive immune system cells)
+macros-own [ macr? tam1? tam2? ]
+macrosB-own [ macr? tam1? tam2? ]
+macrosLv-own [ macr? tam1? tam2? ]
+macrosLg-own [ macr? tam1? tam2? ] 
+
+; ################## Initial setup ##################
+
+;------------------------------------- cells definitions
+to setup-cell [color-cell]
+  set shape "circle 1"
+  set color color-cell
+  set size 1
+  if not graficos [
+    set hidden? true
+  ]
+  rt random-float 360
+  set age 0
+end
+
+; Tumor cells
+to setup-tumor
+  setup-cell blue
+  fd 0.5
+end
+
+; Neutrophil cells
+to setup-neutr
+  setup-cell brown
+  
+  set neut? true
+  set tan1? false
+  set tan2? false
+end
+
+; Macrophage cells
+to setup-macro
+  setup-cell green
+  
+  set macr? true
+  set tam1? false
+  set tam2? false
+end
+
+; Natural killer cells
+to setup-natuk
+  setup-cell red
+end
+
+
+; ################## Movements ##################
+
+
+to attack [ prey max-age prob-kill]
+  if (must-die? max-age prob-kill) [
+    ask prey [ die ]
+  ]
+end
+
+to death-tumor
+  if must-die? ((max-age-tan2 + max-age-tam2) / 2.0) 4 [ die ]
+end
+
+to death-natuk
+  if must-die? max-age-nk 4 [ die ]
+end
+
+to death-neutr
+  (ifelse tan1? [
+    if (must-die? max-age-tan1 4) [
+      set tan1 tan1 - 1
+      die
+    ]
+  ] tan2? [
+    if (must-die? max-age-tan2 4) [
+      set tan2 tan2 - 1
+      die
+    ]
+  ])
+end
+
+to death-macro
+  (ifelse tam1? [
+    if (must-die? max-age-tam1 4) [
+      set tam1 tam1 - 1
+      die
+    ]
+  ] tam2? [
+    if (must-die? max-age-tam2 4) [
+      set tam2 tam2 - 1
+      die
+    ]
+  ])
+end
+
+to-report must-die? [ maxage prob-kill]
+  if (age > maxage) and (random 100) < prob-kill [ ; Se mata si la edad de la celula es mayor a la edad maxima, en una proporcion igual a la probabilidad de matar.
+    report true
+  ]
+
+  report false
+end
