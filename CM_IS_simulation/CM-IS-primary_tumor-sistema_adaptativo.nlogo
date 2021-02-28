@@ -198,18 +198,15 @@ to init
   reset-ticks
   file-close-all
 
-  ;read of input from files
+  ; Calculate from mean and std.
   set-initial-values
 
-  ;create the files corresponding to each organ
-  ;file number is to distinguish the files of each simulation
+  ;create the files corresponding to each organ file number is to distinguish the files of each simulation
   set file_number date-and-time
   print_file "log/primary_tumor/primary tumor" file_number
-  print_file "log/bone/bone tumor" file_number
-  print_file_hamilton
   ;write initial data to files
   print_data_primary counter file_number
-  print_data_bone counter file_number
+  print_file_hamilton
 
   ;initialize variables
   set increase-is 3                                         ; Incremento del sist. inmune maximo posible.
@@ -223,12 +220,7 @@ to init
   setup-primary -1 1
 
   ; coloring of four parts of the world
-  if graficos [
-    ask patches with [pxcor <= 0 and pycor >= 0] [set pcolor gray]
-    ask patches with [pxcor > 0 and pycor >= 0] [set pcolor orange + 2]
-    ask patches with [pxcor <= 0 and pycor < 0] [set pcolor brown + 1]
-    ask patches with [pxcor > 0 and pycor < 0] [set pcolor pink]
-  ]
+  ask patches [set pcolor gray]
 
 end
 
@@ -428,34 +420,32 @@ end
 
 ;------------------------------------- mitosis-tumors
 to mitosis-tumors [tumors-type]
-  if (not stop-replication?) [
-    ask tumors-type [
-      set age age + 1
-      set color blue - 0.25 * age
-    ]
+  ask tumors-type [
+    set age age + 1
+    set color blue - 0.25 * age
+  ]
 
-    (ifelse is-tumor? one-of tumors-type [
-      create-tumors tumor-cells-to-recruit ticks count tumors [
-        setxy -16 16
-        setup-tumor
-      ]
-    ] is-tumorB? one-of tumors-type [
-      create-tumorsB tumor-cells-to-recruit ticks count tumorsB [
-        setxy 16 16
-        setup-tumor
-      ]
-    ] is-tumorLg? one-of tumors-type [
-      create-tumorsLg tumor-cells-to-recruit ticks count tumorsLg [
-        setxy -16 -16
-        setup-tumor
-      ]
-    ] is-tumorLv? one-of tumors-type [
-      create-tumorsLv tumor-cells-to-recruit ticks count tumorsLv [
-        setxy 16 -16
-        setup-tumor
-      ]
-    ])
- ]
+  (ifelse is-tumor? one-of tumors-type [
+    create-tumors tumor-cells-to-recruit ticks count tumors [
+      setxy -16 16
+      setup-tumor
+    ]
+  ] is-tumorB? one-of tumors-type [
+    create-tumorsB tumor-cells-to-recruit ticks count tumorsB [
+      setxy 16 16
+      setup-tumor
+    ]
+  ] is-tumorLg? one-of tumors-type [
+    create-tumorsLg tumor-cells-to-recruit ticks count tumorsLg [
+      setxy -16 -16
+      setup-tumor
+    ]
+  ] is-tumorLv? one-of tumors-type [
+    create-tumorsLv tumor-cells-to-recruit ticks count tumorsLv [
+      setxy 16 -16
+      setup-tumor
+    ]
+  ])
 end
 
 ;------------------------------------- natural killers movement
@@ -1217,11 +1207,11 @@ end
 GRAPHICS-WINDOW
 337
 10
-834
-508
+668
+342
 -1
 -1
-7.5231
+4.97
 1
 10
 1
@@ -1293,10 +1283,10 @@ NIL
 1
 
 MONITOR
-12
-266
-124
-311
+9
+285
+121
+330
 No. tumor cells
 count tumors
 17
@@ -1305,20 +1295,20 @@ count tumors
 
 MONITOR
 140
-149
+60
 319
-194
-No. files processed
+105
+Simulations processed
 (word sim-num \"/\" sim-total)
 17
 1
 11
 
 MONITOR
-12
-378
-124
-423
+9
+397
+121
+442
 No. neutrophils
 count neutrs - tan1 - tan2
 17
@@ -1345,10 +1335,10 @@ PENS
 "Tumor" 1.0 0 -13345367 true "" "plot tumor-cells"
 
 MONITOR
-12
-436
-62
-481
+9
+455
+59
+500
 NIL
 tan1
 17
@@ -1356,10 +1346,10 @@ tan1
 11
 
 MONITOR
-74
-436
-124
-481
+71
+455
+121
+500
 tan2
 tan2
 17
@@ -1367,10 +1357,10 @@ tan2
 11
 
 MONITOR
-12
-492
-124
-537
+9
+511
+121
+556
 No. macrophages
 count macros - tam1 - tam2
 17
@@ -1378,10 +1368,10 @@ count macros - tam1 - tam2
 11
 
 MONITOR
-13
-550
-63
-595
+10
+569
+60
+614
 tam1
 tam1
 17
@@ -1389,10 +1379,10 @@ tam1
 11
 
 MONITOR
-74
-550
-124
-595
+71
+569
+121
+614
 tam2
 tam2
 17
@@ -1400,10 +1390,10 @@ tam2
 11
 
 MONITOR
-12
-321
-124
-366
+9
+340
+121
+385
 No. natural killers
 count natuks
 17
@@ -1427,22 +1417,11 @@ NIL
 NIL
 0
 
-SWITCH
-138
-55
-318
-88
-stop-replication?
-stop-replication?
-1
-1
--1000
-
 MONITOR
-210
-546
-322
-591
+207
+455
+319
+500
 Hamiltonean
 Hamilton
 7
@@ -1479,70 +1458,6 @@ Primary tumor
 0.0
 1
 
-TEXTBOX
-666
-27
-849
-45
-Metastasis Bone
-11
-0.0
-1
-
-TEXTBOX
-415
-268
-565
-286
-Metastasis Lung
-11
-0.0
-1
-
-TEXTBOX
-667
-273
-817
-291
-Metastasis Liver
-11
-0.0
-1
-
-SWITCH
-138
-97
-318
-130
-graficos
-graficos
-0
-1
--1000
-
-PLOT
-1360
-10
-1831
-358
-Bone tumor cells
-ticks
-number-cells
-0.0
-30.0
-0.0
-30.0
-true
-true
-"" ""
-PENS
-"tumor-cells" 1.0 0 -14985354 true "" "plot count tumorsB"
-"tan1-cells" 1.0 0 -10146808 true "" "plot tan1"
-"tan2-cells" 1.0 0 -3889007 true "" "plot tan2"
-"tam1-cells" 1.0 0 -15040220 true "" "plot tam1"
-"tam2-cells" 1.0 0 -8330359 true "" "plot tam2"
-"natural- killers" 1.0 0 -5298144 true "" "plot  count natuksB"
-
 PLOT
 865
 387
@@ -1566,34 +1481,11 @@ PENS
 "tam2-cells" 1.0 0 -6565750 true "" "plot tam2"
 "natural- killers" 1.0 0 -2674135 true "" "plot  count natuks"
 
-PLOT
-1361
-388
-1832
-736
-Liver tumor cells
-ticks
-number-cells
-0.0
-30.0
-0.0
-30.0
-true
-true
-"" ""
-PENS
-"tumor-cells" 1.0 0 -14985354 true "" "plot count tumorsLv"
-"tan1-cells" 1.0 0 -10146808 true "" "plot tan1"
-"tan2-cells" 1.0 0 -3889007 true "" "plot tan2"
-"tam1-cells" 1.0 0 -15040220 true "" "plot tam1"
-"tam2-cells" 1.0 0 -8330359 true "" "plot tam2"
-"natural- killers" 1.0 0 -5298144 true "" "plot  count natuksLv"
-
 MONITOR
-210
-426
-322
-471
+251
+339
+319
+384
 No. Th cells
 count th-cells
 17
@@ -1601,10 +1493,10 @@ count th-cells
 11
 
 MONITOR
-211
-485
-323
-530
+251
+396
+320
+441
 No. Treg cells
 count treg-cells
 17
@@ -1612,43 +1504,10 @@ count treg-cells
 11
 
 MONITOR
-140
-205
-320
-250
-Tick metastasis bone started
-ifelse-value tick-init-metastasis-bone >= 0 [\n  tick-init-metastasis-bone\n][\n  \"N/A\"\n]
-17
-1
-11
-
-MONITOR
-140
-260
-321
-305
-Tick metastasis lung started
-ifelse-value tick-init-metastasis-lung >= 0 [\n  tick-init-metastasis-lung\n][\n  \"N/A\"\n]
-17
-1
-11
-
-MONITOR
-140
-317
-322
-362
-Tick metastasis liver started
-ifelse-value tick-init-metastasis-liver >= 0 [\n  tick-init-metastasis-liver\n][\n  \"N/A\"\n]
-17
-1
-11
-
-MONITOR
-210
-601
-322
-646
+207
+511
+319
+556
 Winner
 (ifelse-value hamilton > 0 [\n  \"Cancer\"\n] hamilton < 0 [\n  \"Immune System\"\n] [\n  \"Empate\"\n])
 17
@@ -1656,10 +1515,10 @@ Winner
 11
 
 MONITOR
-210
-369
-322
-414
+251
+284
+319
+329
 No. T cells
 count t-cells
 17
@@ -1668,63 +1527,74 @@ count t-cells
 
 SLIDER
 9
-55
-121
-88
+119
+319
+152
 mean-is
 mean-is
 0
 1
 0.5
-0.05
+0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
 9
-97
-121
-130
+161
+319
+194
 std-is
 std-is
 0
 1
-0.1
-0.05
+0.2
+0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
 9
-140
-122
-173
+202
+319
+235
 mean-cancer
 mean-cancer
 0
 1
-1.0
-0.05
+0.5
+0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
 9
-182
-123
-215
+242
+319
+275
 std-cancer
 std-cancer
 0
 1
-0.1
-0.05
+0.2
+0.01
 1
 NIL
 HORIZONTAL
+
+INPUTBOX
+8
+51
+120
+111
+sim-total
+10.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?

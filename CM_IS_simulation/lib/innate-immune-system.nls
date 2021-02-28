@@ -53,9 +53,6 @@ to setup-cell [color-cell]
   set shape "circle 1"
   set color color-cell
   set size 1
-  if not graficos [
-    set hidden? true
-  ]
   rt random-float 360
   set age 0
 end

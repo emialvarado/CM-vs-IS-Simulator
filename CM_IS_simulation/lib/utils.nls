@@ -195,9 +195,6 @@ to output_files
   export-world (word "log/primary_tumor/modelo_hamilton" file_number ".csv")
   export-all-plots (word "log/primary_tumor/primary tumor graphs " file_number ".csv")
   export-plot "Primary tumor cells" (word "log/primary_tumor/primary_tumor_graphs" file_number ".csv")
-  export-plot "Bone tumor cells" (word "log/bone/primary_tumor_graphs" file_number ".csv")
-  export-plot "Lung tumor cells" (word "log/lung/primary_tumor_graphs" file_number ".csv")
-  export-plot "Liver tumor cells" (word "log/liver/primary_tumor_graphs" file_number ".csv")
 end
 
 ;Isig hamilton

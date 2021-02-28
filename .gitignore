@@ -6,3 +6,4 @@ salida_modelo_cancer
 statistics/
 *.zip
 .DS_Store
+.*
