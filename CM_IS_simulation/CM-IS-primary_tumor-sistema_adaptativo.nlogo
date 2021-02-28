@@ -1418,10 +1418,10 @@ NIL
 0
 
 MONITOR
-207
-455
-319
-500
+206
+513
+318
+558
 Hamiltonean
 Hamilton
 7
@@ -1482,7 +1482,7 @@ PENS
 "natural- killers" 1.0 0 -2674135 true "" "plot  count natuks"
 
 MONITOR
-251
+236
 339
 319
 384
@@ -1493,7 +1493,7 @@ count th-cells
 11
 
 MONITOR
-251
+236
 396
 320
 441
@@ -1504,10 +1504,10 @@ count treg-cells
 11
 
 MONITOR
-207
-511
-319
-556
+206
+569
+318
+614
 Winner
 (ifelse-value hamilton > 0 [\n  \"Cancer\"\n] hamilton < 0 [\n  \"Immune System\"\n] [\n  \"Empate\"\n])
 17
@@ -1515,7 +1515,7 @@ Winner
 11
 
 MONITOR
-251
+236
 284
 319
 329
