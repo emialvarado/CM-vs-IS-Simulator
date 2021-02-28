@@ -1205,9 +1205,9 @@ to move-macroLv
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-337
+389
 10
-668
+720
 342
 -1
 -1
@@ -1316,10 +1316,10 @@ count neutrs - tan1 - tan2
 11
 
 PLOT
-864
-12
-1337
-360
+793
+82
+1237
+341
 Primary tumor cells
 ticks
 number-cells
@@ -1429,10 +1429,10 @@ Hamilton
 11
 
 PLOT
-337
-525
-834
-784
+336
+353
+778
+612
 Ising-like hamiltonian function
 Time (Netlogo ticks)
 Energy
@@ -1459,10 +1459,10 @@ Primary tumor
 1
 
 PLOT
-865
-387
-1336
-735
+792
+353
+1237
+611
 Lung tumor cells
 ticks
 number-cells
