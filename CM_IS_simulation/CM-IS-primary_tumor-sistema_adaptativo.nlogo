@@ -73,8 +73,6 @@ globals [
   SuccesOfInterac-thCells-tCells
   max-age-th-cell
   ;------------------------------------ new variables
-  total-files
-  file-num
   can_there_be_metastasis
   are_there_metastasis_bone
   are_there_metastasis_lung
@@ -90,6 +88,7 @@ globals [
   ticks-tumor-spread
   is-cells
   tumor-cells
+  sim-num
 ] ; some counts
 
 to clear-vars
@@ -183,8 +182,7 @@ end
 
 ;------------------------------------- setup
 to setup
-  set total-files 100
-  set file-num 1
+  set sim-num 1
 
   init
 end
@@ -306,8 +304,8 @@ to-report should-stop?
     output_files
     file-close-all
 
-    ifelse file-num < total-files [
-      set file-num file-num + 1
+    ifelse sim-num < sim-total [
+      set sim-num sim-num + 1
       init
     ] [
       report true
@@ -320,8 +318,8 @@ to-report should-stop?
     user-message "Demasiado grande el tumor"
     file-close-all
 
-    ifelse file-num < total-files [
-      set file-num file-num + 1
+    ifelse sim-num < sim-total [
+      set sim-num sim-num + 1
       init
     ] [
       report true
@@ -1311,7 +1309,7 @@ MONITOR
 319
 194
 No. files processed
-(word file-num \"/\" total-files)
+(word sim-num \"/\" sim-total)
 17
 1
 11
