@@ -391,7 +391,6 @@ to go
   ;write current data to files
   set counter counter + 1
   print_data_primary counter file_number
-  print_data_bone counter file_number
 
 end
 
@@ -1463,7 +1462,7 @@ PLOT
 353
 1237
 611
-Lung tumor cells
+Cells
 ticks
 number-cells
 0.0
@@ -1534,7 +1533,7 @@ mean-is
 mean-is
 0
 1
-0.5
+0.48
 0.01
 1
 NIL
@@ -1549,7 +1548,7 @@ std-is
 std-is
 0
 1
-0.2
+0.4
 0.01
 1
 NIL
@@ -1564,7 +1563,7 @@ mean-cancer
 mean-cancer
 0
 1
-0.5
+0.51
 0.01
 1
 NIL
@@ -1591,7 +1590,7 @@ INPUTBOX
 120
 111
 sim-total
-10.0
+100.0
 1
 0
 Number

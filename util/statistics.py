@@ -4,16 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from cycler import cycler
 from scipy import stats
-import sys
-
-if len(sys.argv) != 2:
-    print("Example use: ./statistics.py strong-strong")
-    exit()
-
-is_cancer_strength = sys.argv[1]
+from datetime import datetime
 
 dirs = ['CM_IS_simulation/log/']
-out_dir = 'statistics/' + is_cancer_strength + '/'
+out_dir = 'statistics/'
 # tumors = ['primary_tumor', 'bone', 'liver', 'lung']
 tumors = ['primary_tumor']
 cols = ['Hamilton Tumor', 'Hamilton IS', 'Hamilton']
@@ -24,38 +18,6 @@ np.set_printoptions(precision=4)
 #     'color', ['#1f77b4', '#8c564b', '#ff7f0e', '#196F3D', '#33FF52', '#d62728'])
 plt.rcParams['axes.prop_cycle'] = cycler(
     'color', ['blue', 'red', 'orange'])
-
-
-def calc_ticks():
-    global ticks
-    levels = is_cancer_strength.split('-')
-    is_level = 0
-    cancer_level = 0
-
-    if levels[0] == 'weak':
-        is_level = 0
-    elif levels[0] == 'media':
-        is_level = 1
-    else:
-        is_level = 2
-
-    if levels[1] == 'weak':
-        cancer_level = 0
-    elif levels[1] == 'media':
-        cancer_level = 1
-    else:
-        cancer_level = 2
-
-    diff_level = abs(is_level - cancer_level)
-    if (diff_level == 2):
-        ticks += 20
-    elif (diff_level == 1):
-        ticks += 25
-    else:
-        ticks += 30
-
-
-# calc_ticks()
 
 
 def read_data_from_file(filename):
@@ -258,30 +220,27 @@ for dir in dirs:
         mean_data = get_mean_data(data)
         export_data(mean_data, out_dir + 'mean_' + tumor + '.csv')
         plt.subplot(321)
-        gen_graph(mean_data, tumor +
-                  ' (' + is_cancer_strength + ')' + ' - Mean')
+        gen_graph(mean_data, tumor + ' - Mean')
+        gen_graph(mean_data, tumor + ' - Mean')
 
         mode_data = get_mode_data(data)
         export_data(mode_data, out_dir + 'mode_' + tumor + '.csv')
         plt.subplot(322)
-        gen_graph(mode_data, tumor +
-                  ' (' + is_cancer_strength + ')' + ' - Mode')
+        gen_graph(mode_data, tumor + ' - Mode')
 
         median_data = get_median_data(data)
         export_data(median_data, out_dir + 'median_' + tumor + '.csv')
         plt.subplot(323)
-        gen_graph(median_data, tumor +
-                  ' (' + is_cancer_strength + ')' + ' - Median')
+        gen_graph(median_data, tumor + ' - Median')
 
         std_data = get_std_data(data)
         export_data(std_data, out_dir + 'std_' + tumor + '.csv')
         plt.subplot(324)
-        gen_graph(std_data, tumor + ' (' + is_cancer_strength + ')' + ' - STD')
+        gen_graph(std_data, tumor + ' - STD')
 
         is_winner, cancer_winner, draw = get_hamilton(dir + 'primary_tumor')
         plt.subplot(325)
-        gen_bar_graph([is_winner, cancer_winner, draw], tumor +
-                      ' (' + is_cancer_strength + ')' + ' - Winners')
+        gen_bar_graph([is_winner, cancer_winner, draw], tumor + ' - Winners')
 
         # plt.show()
-        export_graph(out_dir + 'CM_IS - ' + tumor + '_' + is_cancer_strength)
+        export_graph(out_dir + 'CM_IS - ' + tumor + '_' + datetime.now().strftime("%Y%m%d_%H%M%S"))
