@@ -65,141 +65,59 @@ to-report is-cells-to-recruit [ticks-spreading current-cells]
   report result
 end
 
-; ################## Read input files ##################
-
-; Read initial values of force from input file
-to set-initial-values-from-file[filename]
-  ;open file wich contains input values
-  file-open filename
+; Generate initial values
+to set-initial-values
+  let max-age 10
+  let max-cells 100
+  let max-cells-recruit 100
+  let max-cells-activate 100
+  let max-cells-deactivate 100
   
-  set data csv:from-row file-read-line
-  set No.-of-initial-tumor-cells item 1 data
+  ; Immune System params
+  set No.-of-initial-natural-killers-cells max-cells * abs(random-normal mean-is std-is)
+  set No.-of-initial-neutrophils-cell max-cells * abs(random-normal mean-is std-is) * 2
+  set No.-of-initial-macrophages-cells max-cells * abs(random-normal mean-is std-is) * 2
+  set No.-of-initial-t-cells max-cells * abs(random-normal mean-is std-is)
+  set No.-of-initial-treg-cells max-cells * abs(random-normal mean-is std-is)
+  set No.-of-initial-th-cells max-cells * abs(random-normal mean-is std-is)
+  set recruit-natural-killers max-cells-recruit * abs(random-normal mean-is std-is)
+  set recruit-neutrophils max-cells-recruit * abs(random-normal mean-is std-is)
+  set recruit-macrophages max-cells-recruit * abs(random-normal mean-is std-is)
+  set recruit-t-cells max-cells-recruit * abs(random-normal mean-is std-is)
+  set recruit-treg-cells max-cells-recruit * abs(random-normal mean-is std-is)
+  set recruit-th-cells max-cells-recruit * abs(random-normal mean-is std-is)
+  set No-of-deactivating-tumor-cells-by-tam1 max-cells-deactivate * abs(random-normal mean-is std-is)
+  set No-of-deactivating-tumor-cells-by-tan1 max-cells-deactivate * abs(random-normal mean-is std-is)
+  set SAttackSuccesByNk 100 * abs(random-normal mean-is std-is)
+  set AttackSuccesByTCells 100 * abs(random-normal mean-is std-is)
+  set SuccesOf-tam1 100 * abs(random-normal mean-is std-is)
+  set SuccesOf-tan1 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-NeutTum 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-MacrTum 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-tCells-tumor 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-tregCells-tCells 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-tregCells-thCells 100 * abs(random-normal mean-is std-is)
+  set SuccesOfInterac-thCells-tCells 100 * abs(random-normal mean-is std-is)
   
-  set data csv:from-row file-read-line
-  set No.-of-initial-neutrophils-cell item 1 data
-  
-  set data csv:from-row file-read-line
-  set No.-of-initial-macrophages-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set No.-of-initial-natural-killers-cells item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set tumor-growth-factor item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set recruit-natural-killers item 1 data
-  
-  set data csv:from-row file-read-line
-  set SAttackSuccesByNk item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set recruit-macrophages item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-MacrTum item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOf-tam1 item 1 data
+  ; Cancer params
+  set No.-of-initial-tumor-cells max-cells * abs(random-normal mean-cancer std-cancer)
+  set No-of-activating-tumor-cells-by-tam2 max-cells-activate * abs(random-normal mean-cancer std-cancer)
+  set No-of-activating-tumor-cells-by-tan2 max-cells-activate * abs(random-normal mean-cancer std-cancer)
+  set tumor-growth-factor 100 * abs(random-normal mean-cancer std-cancer)
   set SuccesOf-tam2 100 - SuccesOf-tam1
-  
-  set data csv:from-row file-read-line
-  set Change-to-tam1-or-tam2 item 1 data
-  
-  set data csv:from-row file-read-line
-  set No-of-activating-tumor-cells-by-tam2 item 1 data
-  
-  set data csv:from-row file-read-line
-  set No-of-desactivating-tumor-cells-by-tam1 item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set recruit-neutrophils item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-NeutTum item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOf-tan1 item 1 data
   set SuccesOf-tan2 100 - SuccesOf-tan1
   
-  set data csv:from-row file-read-line
-  set Change-to-tan1-or-tan2 item 1 data
+  set Change-to-tam1-or-tam2 100 * (random-normal (mean-is / (mean-is + mean-cancer)) std-is)
+  set Change-to-tan1-or-tan2 100 * (random-normal (mean-is / (mean-is + mean-cancer)) std-is)
   
-  set data csv:from-row file-read-line
-  set No-of-activating-tumor-cells-by-tan2 item 1 data
-  
-  set data csv:from-row file-read-line
-  set No-of-desactivating-tumor-cells-by-tan1 item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set max-age-tam1 item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-tam2 item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-tan1 item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-tan2 item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-nk item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set max-tumors item 1 data
-  
-  set data csv:from-row file-read-line
-  set No.ticks item 1 data
-  
-  
-  set data csv:from-row file-read-line
-  set No.-of-initial-t-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set recruit-t-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-tCells-tumor item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-t-cell item 1 data
-  
-  set data csv:from-row file-read-line
-  set AttackSuccesByTCells item 1 data
-  
-  set data csv:from-row file-read-line
-  set No.-of-initial-treg-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set recruit-treg-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-tregCells-tCells item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-tregCells-thCells item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-treg-cell item 1 data
-  
-  set data csv:from-row file-read-line
-  set No.-of-initial-th-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set recruit-th-cells item 1 data
-  
-  set data csv:from-row file-read-line
-  set SuccesOfInterac-thCells-tCells item 1 data
-  
-  set data csv:from-row file-read-line
-  set max-age-th-cell item 1 data
+  set max-age-tam1 max-age * abs(random-normal mean-is std-is)
+  set max-age-tam2 max-age * abs(random-normal mean-is std-is)
+  set max-age-tan1 max-age * abs(random-normal mean-is std-is)
+  set max-age-tan2 max-age * abs(random-normal mean-is std-is)
+  set max-age-nk max-age * abs(random-normal mean-is std-is)
+  set max-age-t-cell max-age * abs(random-normal mean-is std-is)
+  set max-age-treg-cell max-age * abs(random-normal mean-is std-is)
+  set max-age-th-cell max-age * abs(random-normal mean-is std-is)
 end
 
 ; ################## Write output files ##################

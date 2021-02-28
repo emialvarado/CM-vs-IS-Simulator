@@ -35,8 +35,8 @@ globals [
   SuccesOfInterac-NeutTum
   Change-to-tan1-or-tan2
   SuccesOf-tan1
-  No-of-desactivating-tumor-cells-by-tan1
-  No-of-desactivating-tumor-cells-by-tam1
+  No-of-deactivating-tumor-cells-by-tan1
+  No-of-deactivating-tumor-cells-by-tam1
   SuccesOf-tam1
   recruit-macrophages
   SuccesOfInterac-MacrTum
@@ -73,7 +73,6 @@ globals [
   SuccesOfInterac-thCells-tCells
   max-age-th-cell
   ;------------------------------------ new variables
-  filename-template
   total-files
   file-num
   can_there_be_metastasis
@@ -127,8 +126,8 @@ to clear-vars
   set SuccesOfInterac-NeutTum 0
   set Change-to-tan1-or-tan2 0
   set SuccesOf-tan1 0
-  set No-of-desactivating-tumor-cells-by-tan1 0
-  set No-of-desactivating-tumor-cells-by-tam1 0
+  set No-of-deactivating-tumor-cells-by-tan1 0
+  set No-of-deactivating-tumor-cells-by-tam1 0
   set SuccesOf-tam1 0
   set recruit-macrophages 0
   set SuccesOfInterac-MacrTum 0
@@ -139,8 +138,8 @@ to clear-vars
   set No-of-activating-tumor-cells-by-tan2 0
   set SuccesOf-tam2 0
   set No-of-activating-tumor-cells-by-tam2 0
-  set max-tumors 0
-  set No.ticks 0
+  set max-tumors 5000
+  set No.ticks 30
   set max-age-tam1 0
   set max-age-tam2 0
   set max-age-tan1 0
@@ -184,8 +183,6 @@ end
 
 ;------------------------------------- setup
 to setup
-  ; Lecture of variable input files. Files eg. {"input_values1.csv", "input_values2.csv", ... , "input_valuesN.csv"} -> "input-values"
-  set filename-template (word "data/" is-cancer-strength "/input_values")
   set total-files 100
   set file-num 1
 
@@ -204,7 +201,7 @@ to init
   file-close-all
 
   ;read of input from files
-  set-initial-values-from-file (word filename-template file-num ".csv")
+  set-initial-values
 
   ;create the files corresponding to each organ
   ;file number is to distinguish the files of each simulation
@@ -375,18 +372,22 @@ to go
   ;  death-t-cell
   ;]
 
-  let x cordinates -1 1
-  let y cordinates 1 -1
-  create-natuks is-cells-to-recruit ticks is-cells [ setup-natuk setxy x y ]
+  let tumh one-of tumors
 
-  ; recruit of innate immune system cells
-  set x cordinates -1 1
-  set y cordinates 1 -1
-  create-neutrs is-cells-to-recruit ticks is-cells [ setup-neutr setxy x y ]
+  if tumh != nobody [
+    let x cordinates -1 1
+    let y cordinates 1 -1
+    create-natuks is-cells-to-recruit ticks is-cells [ setup-natuk setxy x y ]
 
-  set x cordinates -1 1
-  set y cordinates 1 -1
-  create-macros is-cells-to-recruit ticks is-cells [ setup-macro setxy x y ]
+    ; recruit of innate immune system cells
+    set x cordinates -1 1
+    set y cordinates 1 -1
+    create-neutrs is-cells-to-recruit ticks is-cells [ setup-neutr setxy x y ]
+
+    set x cordinates -1 1
+    set y cordinates 1 -1
+    create-macros is-cells-to-recruit ticks is-cells [ setup-macro setxy x y ]
+  ]
 
   ;METASTASIS
   ;go-metastasis
@@ -558,7 +559,7 @@ to neutrs-tumors-interc [neutrs-type tumors-type]
     let prob-aux random 100
 
     (ifelse tan1? and prob-aux < SuccesOf-tan1 [ ; desactivation of tumor replication
-      let n min list count tumors-type No-of-desactivating-tumor-cells-by-tan1
+      let n min list count tumors-type No-of-deactivating-tumor-cells-by-tan1
       ask n-of n tumors-type [
         set age age + 0.1
       ]
@@ -586,7 +587,7 @@ to macros-tumors-interc [macros-type tumors-type]
     let prob-aux random 100
 
     (ifelse tam1? and prob-aux < SuccesOf-tam1 [  ; phagocitation of desactive tumor cells
-      let n min list count tumors-type No-of-desactivating-tumor-cells-by-tam1
+      let n min list count tumors-type No-of-deactivating-tumor-cells-by-tam1
       ask n-of n tumors-type [
         set age age + 0.1
       ]
@@ -1294,10 +1295,10 @@ NIL
 1
 
 MONITOR
-9
-149
-121
-194
+12
+266
+124
+311
 No. tumor cells
 count tumors
 17
@@ -1316,10 +1317,10 @@ No. files processed
 11
 
 MONITOR
-9
-261
-121
-306
+12
+378
+124
+423
 No. neutrophils
 count neutrs - tan1 - tan2
 17
@@ -1346,10 +1347,10 @@ PENS
 "Tumor" 1.0 0 -13345367 true "" "plot tumor-cells"
 
 MONITOR
-9
-319
-59
-364
+12
+436
+62
+481
 NIL
 tan1
 17
@@ -1357,10 +1358,10 @@ tan1
 11
 
 MONITOR
-71
-319
-121
-364
+74
+436
+124
+481
 tan2
 tan2
 17
@@ -1368,10 +1369,10 @@ tan2
 11
 
 MONITOR
-9
-375
-121
-420
+12
+492
+124
+537
 No. macrophages
 count macros - tam1 - tam2
 17
@@ -1379,10 +1380,10 @@ count macros - tam1 - tam2
 11
 
 MONITOR
-10
-433
-60
-478
+13
+550
+63
+595
 tam1
 tam1
 17
@@ -1390,10 +1391,10 @@ tam1
 11
 
 MONITOR
-71
-433
-121
-478
+74
+550
+124
+595
 tam2
 tam2
 17
@@ -1401,10 +1402,10 @@ tam2
 11
 
 MONITOR
-9
-204
-121
-249
+12
+321
+124
+366
 No. natural killers
 count natuks
 17
@@ -1440,10 +1441,10 @@ stop-replication?
 -1000
 
 MONITOR
-214
-525
-326
-570
+210
+546
+322
+591
 Hamiltonean
 Hamilton
 7
@@ -1591,10 +1592,10 @@ PENS
 "natural- killers" 1.0 0 -5298144 true "" "plot  count natuksLv"
 
 MONITOR
-10
-548
-122
-593
+210
+426
+322
+471
 No. Th cells
 count th-cells
 17
@@ -1602,10 +1603,10 @@ count th-cells
 11
 
 MONITOR
-11
-607
-123
-652
+211
+485
+323
+530
 No. Treg cells
 count treg-cells
 17
@@ -1645,22 +1646,11 @@ ifelse-value tick-init-metastasis-liver >= 0 [\n  tick-init-metastasis-liver\n][
 1
 11
 
-INPUTBOX
-9
-54
-121
-129
-is-cancer-strength
-strong-strong
-1
-0
-String
-
 MONITOR
-214
-580
-326
-625
+210
+601
+322
+646
 Winner
 (ifelse-value hamilton > 0 [\n  \"Cancer\"\n] hamilton < 0 [\n  \"Immune System\"\n] [\n  \"Empate\"\n])
 17
@@ -1668,15 +1658,75 @@ Winner
 11
 
 MONITOR
-10
-491
-122
-536
+210
+369
+322
+414
 No. T cells
 count t-cells
 17
 1
 11
+
+SLIDER
+9
+55
+121
+88
+mean-is
+mean-is
+0
+1
+0.5
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+9
+97
+121
+130
+std-is
+std-is
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+9
+140
+122
+173
+mean-cancer
+mean-cancer
+0
+1
+1.0
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+9
+182
+123
+215
+std-cancer
+std-cancer
+0
+1
+0.1
+0.05
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

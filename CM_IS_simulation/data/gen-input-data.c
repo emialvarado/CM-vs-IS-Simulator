@@ -37,14 +37,14 @@ void gen(level_t is_level, level_t cancer_level) {
   fprintf(f, "SuccesOf-tam1,%d\n", get_rand_interval(is_level, is_intervals));
   fprintf(f, "Change-to-tam1-or-tam2,%d\n", prob_change_neut_macr);
   fprintf(f, "No-of-activating-tumor-cells-by-tam2,%d\n", get_rand_interval(cancer_level, cancer_intervals));
-  fprintf(f, "No-of-desactivating-tumor-cells-by-tam1,%d\n", get_rand_interval(is_level, is_intervals));
+  fprintf(f, "No-of-deactivating-tumor-cells-by-tam1,%d\n", get_rand_interval(is_level, is_intervals));
 
   fprintf(f, "recruit-neutrophils,%d\n", get_rand_interval(is_level, is_intervals));
   fprintf(f, "SuccesOfInterac-NeutTum,%d\n", get_rand_interval(is_level, is_intervals));
   fprintf(f, "SuccesOf-tan1,%d\n", get_rand_interval(is_level, is_intervals));
   fprintf(f, "Change-to-tan1-or-tan2,%d\n", prob_change_neut_macr);
   fprintf(f, "No-of-activating-tumor-cells-by-tan2,%d\n", get_rand_interval(cancer_level, cancer_intervals));
-  fprintf(f, "No-of-desactivating-tumor-cells-by-tan1,%d\n", get_rand_interval(is_level, is_intervals));
+  fprintf(f, "No-of-deactivating-tumor-cells-by-tan1,%d\n", get_rand_interval(is_level, is_intervals));
 
   fprintf(f, "max-age-tam1,%d\n", get_rand_interval(is_level, age_intervals));
   fprintf(f, "max-age-tam2,%d\n", get_rand_interval(is_level, age_intervals));
