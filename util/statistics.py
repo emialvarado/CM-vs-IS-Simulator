@@ -218,23 +218,22 @@ for dir in dirs:
         plt.subplots_adjust(hspace=0.5)
 
         mean_data = get_mean_data(data)
-        export_data(mean_data, out_dir + 'mean_' + tumor + '.csv')
+        # export_data(mean_data, out_dir + 'mean_' + tumor + '.csv')
         plt.subplot(321)
-        gen_graph(mean_data, tumor + ' - Mean')
         gen_graph(mean_data, tumor + ' - Mean')
 
         mode_data = get_mode_data(data)
-        export_data(mode_data, out_dir + 'mode_' + tumor + '.csv')
+        # export_data(mode_data, out_dir + 'mode_' + tumor + '.csv')
         plt.subplot(322)
         gen_graph(mode_data, tumor + ' - Mode')
 
         median_data = get_median_data(data)
-        export_data(median_data, out_dir + 'median_' + tumor + '.csv')
+        # export_data(median_data, out_dir + 'median_' + tumor + '.csv')
         plt.subplot(323)
         gen_graph(median_data, tumor + ' - Median')
 
         std_data = get_std_data(data)
-        export_data(std_data, out_dir + 'std_' + tumor + '.csv')
+        # export_data(std_data, out_dir + 'std_' + tumor + '.csv')
         plt.subplot(324)
         gen_graph(std_data, tumor + ' - STD')
 
